@@ -2,8 +2,7 @@ import glob
 import numpy as np
 from parsers import parse_methods
 from embedding import embed_sentences
-from milvus_DB import insert_entities
-import numpy as np
+from milvus_DB import connect_to_milvus, create_collection, insert_entities
 
 directory_path = 'ExampleProject/*'
 
@@ -18,5 +17,10 @@ for file_path in files:
     embeddings = embed_sentences(methods_or_chunks)
     all_embeddings.extend(embeddings)
 
-insert_entities(all_embeddings)
+dim = 768
+num_entities = len(all_embeddings)
+
+connect_to_milvus()
+milvus_DB = create_collection(dim)
+insert_entities(milvus_DB, num_entities, all_embeddings)
 print("Done adding entities to Milvus_DB")
