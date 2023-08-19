@@ -4,7 +4,7 @@ from pymilvus import (
     connections,
     utility,
     FieldSchema, CollectionSchema, DataType,
-    Collection,
+    Collection, IndexType
 )
 
 def connect_to_milvus():
@@ -36,3 +36,11 @@ def insert_entities(milvus_DB, num_entities, all_embeddings):
     insert_result = milvus_DB.insert(entities)
     milvus_DB.flush()
     print(f"Number of entities in Milvus_DB: {milvus_DB.num_entities}")
+
+def create_index(collection, field_name="embeddings", metric_type="L2"):
+    index_params = {
+        "metric_type": metric_type,
+    }
+    collection.create_index(field_name, index_params)
+    print(f"Index created for field {field_name} in collection.")
+
