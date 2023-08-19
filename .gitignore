@@ -7,6 +7,10 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+volumes/
+
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
