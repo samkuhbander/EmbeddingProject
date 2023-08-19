@@ -1,0 +1,2 @@
+astunparse==1.6.3
+pymilvus==2.2.15

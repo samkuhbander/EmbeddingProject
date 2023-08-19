@@ -1,27 +1,6 @@
-import ast
 import os
-import astunparse
 import glob
-import re
-
-def parse_python(code):
-    tree = ast.parse(code)
-    return [astunparse.unparse(node).strip() for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
-
-def parse_java(code):
-    methods = []
-    for match in re.finditer(r'(public|private|protected|static)?\s+\w+\s+\w+\s*\(.*\)\s*{[^}]*}', code):
-        methods.append(match.group(0))
-    return methods
-
-def parse_cpp(code):
-    methods = []
-    # Using a non-greedy approach to match individual methods
-    pattern = r'(public|private|protected|static)?\s+\w+\s+\w+\s*\(.*?\)\s*\{.*?\}'
-    for match in re.finditer(pattern, code, re.DOTALL):
-        method = match.group(0).strip()  # Strip leading and trailing whitespace
-        methods.append(method)
-    return methods
+from parsers import parse_python, parse_java, parse_cpp
 
 def parse_methods(file_path):
     _, extension = os.path.splitext(file_path)
@@ -39,17 +18,14 @@ def parse_methods(file_path):
     try:
         if parse_function:
             return parse_function(code)
-
     except Exception as e:
         print(f"Parsing error: {e}")
 
-    # Default behavior for other or unknown languages, or if parsing failed
-    # Split the code in chunks of 30 lines
     lines = code.split('\n')
     chunks = [lines[i:i + 30] for i in range(0, len(lines), 30)]
     return ['\n'.join(chunk) for chunk in chunks]
 
-directory_path = 'ExampleProject/*'  # Adjust with the directory path you want to parse
+directory_path = 'ExampleProject/*'
 files = glob.glob(directory_path)
 
 for file_path in files:
@@ -58,4 +34,4 @@ for file_path in files:
     for index, method_or_chunk in enumerate(methods_or_chunks):
         print(f"Chunk {index + 1}:")
         print(method_or_chunk)
-        print("-" * 50)  # Separator line
+        print("-" * 50)
