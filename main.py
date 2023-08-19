@@ -1,8 +1,7 @@
 import ast
 import os
-import javalang
-from pycparser import c_parser, c_ast, parse_file
 import astunparse
+import glob
 
 def parse_python(code):
     tree = ast.parse(code)
@@ -31,10 +30,13 @@ def parse_methods(file_path):
     chunks = [lines[i:i + 20] for i in range(0, len(lines), 20)]
     return ['\n'.join(chunk) for chunk in chunks]
 
-file_path = 'example.py'  # Adjust with the file path you want to parse
-methods_or_chunks = parse_methods(file_path)
+directory_path = 'ExampleProject/*'  # Adjust with the directory path you want to parse
+files = glob.glob(directory_path)
 
-for index, method_or_chunk in enumerate(methods_or_chunks):
-    print(f"Chunk {index + 1}:")
-    print(method_or_chunk)
-    print("-" * 50)  # Separator line
+for file_path in files:
+    print(f"Parsing file: {file_path}")
+    methods_or_chunks = parse_methods(file_path)
+    for index, method_or_chunk in enumerate(methods_or_chunks):
+        print(f"Chunk {index + 1}:")
+        print(method_or_chunk)
+        print("-" * 50)  # Separator line
