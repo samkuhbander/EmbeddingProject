@@ -1,13 +1,10 @@
-import numpy as np
 import glob
 import hashlib
 from milvus_DB import drop_altered_file
 from pymilvus import (
-    connections,
-    utility,
-    FieldSchema, CollectionSchema, DataType,
     Collection
 )
+
 def hash_file(file_path):
     with open(file_path, 'rb') as f:
         file_hash = hashlib.sha256()
@@ -22,9 +19,8 @@ def compareFiles():
     directory_path = 'ExampleProject/*'
     files = glob.glob(directory_path)
     
-    check = 0;
-
-    ret = [];
+    check = 0
+    ret = []
 
     for file in files:
         hashed_file = hash_file(file)

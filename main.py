@@ -27,10 +27,9 @@ directory_path = ''
 files = None
 milvus_DB = None
 connect_to_milvus()
-if does_collection_exist():  # temporarily make this code unreachable
-    # only add the new embeddings and code snippets
+if does_collection_exist(): 
     print("Milvus_DB already exists")
-    files = compareFiles(); # TODO: this is where we extract the new files
+    files = compareFiles()
     if len(files) == 0:
         print("No new files to add to Milvus_DB")
     milvus_DB = create_collection(dim)
