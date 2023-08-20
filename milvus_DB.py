@@ -1,3 +1,4 @@
+import hashlib
 import numpy as np
 from pymilvus import (
     connections,
@@ -27,29 +28,31 @@ def drop_altered_file(hashedFile):
     collection.delete_entity_by_id(collection_name='milvus_DB', id_array=ids)
 
 def create_collection(dim):
-    # If collection already exists, drop it
-    # if utility.has_collection("milvus_DB"):
-    #     print("\n=== Collection 'milvus_DB' already exists. Dropping it ===\n")
-    #     utility.drop_collection("milvus_DB")
+    # if database exists, drop it
+    if does_db_exist():
+        print("\n=== Drop collection 'milvus_DB' ===\n")
+        utility.drop_collection("milvus_DB")
 
     print("\n=== Create collection 'milvus_DB' ===\n")
     fields = [
-        FieldSchema(name="pk", dtype=DataType.INT64, is_primary=True, auto_id=True),
+        FieldSchema(name="pk", dtype=DataType.INT64, is_primary=True, auto_id=True), # set auto_id to True
         FieldSchema(name="random", dtype=DataType.DOUBLE),
         FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=dim),
-        FieldSchema(name="code_snippet", dtype=DataType.VARCHAR, max_length=10000)
+        FieldSchema(name="code_snippet", dtype=DataType.VARCHAR, max_length=10000),
+        FieldSchema(name="file_hash", dtype=DataType.INT64) # Field for file hash
     ]
 
     schema = CollectionSchema(fields, description="introducing melvis 'milvus_DB'")
     milvus_DB = Collection("milvus_DB", schema, consistency_level="Strong")
     return milvus_DB
 
-def insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets):
+def insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets, all_file_hashes):
     print("\n=== Start inserting entities ===\n")
     entities = [
         np.random.random(num_entities).tolist(),
         all_embeddings,
-        all_code_snippets
+        all_code_snippets,
+        all_file_hashes
     ]
 
     insert_result = milvus_DB.insert(entities)
