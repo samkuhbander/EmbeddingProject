@@ -9,9 +9,7 @@ from pymilvus import (
 def connect_to_milvus():
     print("\n=== start connecting to Milvus ===\n")
     connections.connect("default", host="localhost", port="19530")
-    has = utility.has_collection("hello_milvus")
-    print(f"Does collection hello_milvus exist in Milvus: {has}")
-
+    
 def create_collection(dim):
     #If collection already exists, drop it
     if utility.has_collection("milvus_DB"):
