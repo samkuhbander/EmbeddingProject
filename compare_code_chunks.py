@@ -28,14 +28,15 @@ def compareFiles():
 
     for file in files:
         hashed_file = hash_file(file)
-        if 443676133441406860 == collection.query(
-            expr = "pk in [443676133441406860]",
+        if hashed_file == collection.query(
+            expr = str(hashed_file) + " == file_hash",
             offset = 0,
-            output_fields = ["pk"],
+            output_fields = ["file_hash"],
             limit = 1,
             ):
-            # check+=1
+            check+=1
             ret.append(file)
+            print("found a match")
     if check > 0:
         print(check + " altered files dropped from Milvus_DB")
     return ret

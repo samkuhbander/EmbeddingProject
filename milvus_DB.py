@@ -57,6 +57,8 @@ def insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets, 
 
     if (num_entities > 0):
         insert_result = milvus_DB.insert(entities)
+    else:
+        print("No new files to add to Milvus_DB")
     milvus_DB.flush()
     print(f"Number of entities in Milvus_DB: {milvus_DB.num_entities}")
 
