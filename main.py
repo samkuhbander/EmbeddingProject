@@ -30,10 +30,6 @@ directory_path = 'ExampleProject/*'
 connect_to_milvus()
 milvus_DB = None
 
-# this is for testing and reseting purposes
-print("\n=== Drop collection 'milvus_DB' ===\n")
-drop_collection("milvus_DB")
-
 files = None # this is/else statement establishes the files to be processed
 if does_collection_exist(): 
     print("Milvus_DB already exists")
@@ -74,4 +70,4 @@ print("Done adding entities to Milvus_DB")
 milvus_DB.load()
 
 query = "add together numbers"
-search_similar_entities(milvus_DB, query)
+#search_similar_entities(milvus_DB, query)
