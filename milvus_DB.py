@@ -7,6 +7,22 @@ def connect_to_milvus():
     print("\n=== start connecting to Milvus ===\n")
     connections.connect("default", host="localhost", port="19530")
 
+def count_entities(collection_name):
+    collection = Collection(collection_name)
+    collection.load()
+    return collection.num_entities
+
+def print_milvus(collection_name):
+    expr = "file_hash > 0"
+    collection_name = "milvus_DB"
+    collection = Collection(collection_name)
+    collection.load()
+    query_results = collection.query(
+        expr=expr,
+        offset=0,
+        output_fields=["pk"],
+    )
+    print(query_results)
 
 def does_collection_exist():
     print("\n=== check if Milvus_DB exists ===\n")
