@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 import glob
 from parsers import parse_file
 from embedding import embed_sentences
-from milvus_DB import connect_to_milvus, create_collection, create_index, insert_entities
+from milvus_DB import connect_to_milvus, create_collection, create_index, does_db_exist, insert_entities
 
 def process_file(file_path):
     print(f"Parsing file: {file_path}")
@@ -10,8 +10,20 @@ def process_file(file_path):
     embeddings = embed_sentences(methods_or_chunks)
     return embeddings, methods_or_chunks
 
-directory_path = 'ExampleProject/*'
-files = glob.glob(directory_path)
+dim = 768
+
+directory_path = ''
+files = None
+
+connect_to_milvus()
+if does_db_exist():
+    # only add the new embeddings and code snippets
+    files = 'new files' # TODO: this is where we extract the new files
+else:
+    milvus_DB = create_collection(dim)
+    directory_path = 'ExampleProject/*'
+    files = glob.glob(directory_path)
+
 
 # Collecting embeddings for all the chunks
 all_embeddings = []
@@ -24,11 +36,8 @@ for embeddings, methods_or_chunks in results:
     all_embeddings.extend(embeddings)
     all_code_snippets.extend(methods_or_chunks)
 
-dim = 768
 num_entities = len(all_embeddings)
 
-connect_to_milvus()
-milvus_DB = create_collection(dim)
 insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets)
 create_index(milvus_DB)
 print("Done adding entities to Milvus_DB")
