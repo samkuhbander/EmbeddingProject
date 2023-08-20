@@ -14,6 +14,18 @@ def does_db_exist():
     print("\n=== check if Milvus_DB exists ===\n")
     return utility.has_collection("milvus_DB")
 
+def drop_altered_file(hashedFile):
+    collection = Collection("milvus_DB")  
+    collection.load()    # Get an existing collection.
+    ids = collection.query(
+        expr = "file_hash in " + hashedFile + "",
+        offset = 0,
+        output_fields = ["pk"],
+        )
+    
+    print("\n=== dropped an altered file ===\n")
+    collection.delete_entity_by_id(collection_name='milvus_DB', id_array=ids)
+
 def create_collection(dim):
     # If collection already exists, drop it
     # if utility.has_collection("milvus_DB"):
