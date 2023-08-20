@@ -5,6 +5,7 @@ from parsers import parse_file
 from embedding import embed_sentences
 from milvus_DB import connect_to_milvus, create_collection, create_index, does_collection_exist, insert_entities
 from compare_code_chunks import compareFiles
+from search import search_similar_entities
 
 def process_file(file_path):
     print(f"Parsing file: {file_path}")
@@ -63,19 +64,5 @@ print("Done adding entities to Milvus_DB")
 # Load collection
 milvus_DB.load()
 
-# Search for similar entities
 query = "add together numbers"
-query_embedding = [embed_sentences([query])[0]]
-search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
-results = milvus_DB.search(query_embedding, "embeddings", search_params, limit=3)
-
-# Get IDs and perform query
-ids_to_query = [hit.id for hit in results[0]]
-query_results = milvus_DB.query(f"pk in {ids_to_query}", output_fields=["code_snippet"])
-
-# Print results
-print("Search Results for " + query + ":")
-for hit, code_snippet in zip(results[0], query_results):
-    print(f"ID: {hit.id}, Distance: {hit.distance}")
-    print("Code Snippet:")
-    print(code_snippet['code_snippet'] + "\n")
+search_similar_entities(milvus_DB, query)
