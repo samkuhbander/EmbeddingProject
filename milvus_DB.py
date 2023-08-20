@@ -5,6 +5,7 @@ from pymilvus import (
     FieldSchema, CollectionSchema, DataType,
     Collection
 )
+from hashlib import sha256
 
 def connect_to_milvus():
     print("\n=== start connecting to Milvus ===\n")
@@ -15,14 +16,14 @@ def does_db_exist():
     return utility.has_collection("milvus_DB")
 
 def create_collection(dim):
-    # If collection already exists, drop it
-    # if utility.has_collection("milvus_DB"):
-    #     print("\n=== Collection 'milvus_DB' already exists. Dropping it ===\n")
-    #     utility.drop_collection("milvus_DB")
+    #if database exists, drop it
+    if does_db_exist():
+        print("\n=== Drop collection 'milvus_DB' ===\n")
+        utility.drop_collection("milvus_DB")
 
     print("\n=== Create collection 'milvus_DB' ===\n")
     fields = [
-        FieldSchema(name="pk", dtype=DataType.INT64, is_primary=True, auto_id=True),
+        FieldSchema(name="pk", dtype=DataType.INT64, is_primary=True, auto_id=False), # set auto_id to False
         FieldSchema(name="random", dtype=DataType.DOUBLE),
         FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=dim),
         FieldSchema(name="code_snippet", dtype=DataType.VARCHAR, max_length=10000)
@@ -34,7 +35,9 @@ def create_collection(dim):
 
 def insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets):
     print("\n=== Start inserting entities ===\n")
+    pks = [int(sha256(snippet.encode()).hexdigest(), 16) % 10**16 for snippet in all_code_snippets] # Creating a hash as pk
     entities = [
+        pks,
         np.random.random(num_entities).tolist(),
         all_embeddings,
         all_code_snippets
