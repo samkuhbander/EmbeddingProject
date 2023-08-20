@@ -12,6 +12,17 @@ def does_collection_exist():
     print("\n=== check if Milvus_DB exists ===\n")
     return utility.has_collection("milvus_DB")
 
+def drop_unrepresented_files(current_file_hashes):
+    collection = Collection("milvus_DB")
+    collection.load()  # Get an existing collection.
+    ids = collection.query(
+        expr="file_hash not in " + str(current_file_hashes) + "",
+        offset=0,
+        output_fields=["pk"],
+    )
+
+    print("\n=== dropped unrepresented files. PKs = " + str(ids) + "===\n")
+    connections.delete_entity_by_id(collection_name="milvus_DB", id_array=ids)
 
 def drop_altered_file(hashedFile):
     collection = Collection("milvus_DB")

@@ -20,9 +20,14 @@ def compareFiles():
     directory_path = "ExampleProject/*"
     original_file_paths = glob.glob(directory_path)
     filtered_file_paths = []  # We'll store the unmatched files here
+    current_file_hashes = []
 
     for file_path in original_file_paths:
         hashed_file = hash_file(file_path)
+        current_file_hashes.append(int(hashed_file)) #concurrent 
+        # convert hashed files to INT64 file_hash field in milvus_DB
+
+
         if (
             len(
                 collection.query(
@@ -38,13 +43,10 @@ def compareFiles():
             filtered_file_paths.append(file_path)
         else:
             print("found a match. hash: " + str(hashed_file) + " file: " + file_path)
-            file_paths.remove(file_path)
-
-
-    print("exited for loop")
-    # drop_files_helper(file_paths)
-    drop_unrepresented_files(current_hashed_files)
-    return file_paths
+            # drop_altered_file(str(hashed_file))
+    
+    drop_unrepresented_files(current_file_hashes)
+    return filtered_file_paths
 
 
 
