@@ -31,6 +31,7 @@ def compareFiles():
             # If not found in the collection, add to the filtered list
             filtered_file_paths.append(file_path)
         else:
+            print("found a match. hash: " + str(hashed_file) + " file: " + file_path)
             # drop_altered_file(str(hashed_file))
 
     return filtered_file_paths
