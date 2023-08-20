@@ -24,7 +24,7 @@ def drop_altered_file(hashedFile):
         output_fields = ["pk"],
         )
     
-    print("\n=== dropped an altered file ===\n")
+    print("\n=== dropped an altered file. PKs = " + ids + "===\n")
     collection.delete_entity_by_id(collection_name='milvus_DB', id_array=ids)
 
 def create_collection(dim):
