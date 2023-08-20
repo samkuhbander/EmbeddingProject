@@ -17,25 +17,21 @@ def compareFiles():
     collection.load()
 
     directory_path = 'ExampleProject/*'
-    files = glob.glob(directory_path)
+    file_paths = glob.glob(directory_path)
     
-    check = 0
-    ret = []
-
-    for file in files:
-        hashed_file = hash_file(file)
-        if hashed_file == collection.query(
+    print("these are the files received by compare_file_hashes: " + str(file_paths))
+    for file_path in file_paths:
+        hashed_file = hash_file(file_path)
+        if 1 == len(collection.query(
             expr = str(hashed_file) + " == file_hash",
             offset = 0,
             output_fields = ["file_hash"],
             limit = 1,
-            ):
-            check+=1
-            ret.append(file)
-            print("found a match")
-    if check > 0:
-        print(check + " altered files dropped from Milvus_DB")
-    return ret
+            )):
+            print("found a match. hash: " + str(hashed_file) + " file: " + file_path)
+            file_paths.remove(file_path)
+            # drop_altered_file(str(hashed_file)) 
+    return file_paths
 
 
 

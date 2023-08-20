@@ -27,11 +27,15 @@ def drop_altered_file(hashedFile):
     print("\n=== dropped an altered file. PKs = " + ids + "===\n")
     collection.delete_entity_by_id(collection_name='milvus_DB', id_array=ids)
 
+# this if for testing and reseting purposes
+def drop_collection(collection_name):
+    utility.drop_collection(collection_name)
+
 def create_collection(dim):
     # if database exists, drop it
     # if does_db_exist():
-    #     print("\n=== Drop collection 'milvus_DB' ===\n")
-    #     utility.drop_collection("milvus_DB")
+    # print("\n=== Drop collection 'milvus_DB' ===\n")
+    # utility.drop_collection("milvus_DB")
 
     print("\n=== Create collection 'milvus_DB' ===\n")
     fields = [
@@ -39,20 +43,22 @@ def create_collection(dim):
         FieldSchema(name="random", dtype=DataType.DOUBLE),
         FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=dim),
         FieldSchema(name="code_snippet", dtype=DataType.VARCHAR, max_length=10000),
-        FieldSchema(name="file_hash", dtype=DataType.INT64) # Field for file hash
+        FieldSchema(name="file_hash", dtype=DataType.INT64), # Field for file hash
+        FieldSchema(name="file_path", dtype=DataType.VARCHAR, max_length=100)
     ]
 
     schema = CollectionSchema(fields, description="introducing melvis 'milvus_DB'")
     milvus_DB = Collection("milvus_DB", schema, consistency_level="Strong")
     return milvus_DB
 
-def insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets, all_file_hashes):
+def insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets, all_file_hashes, all_file_paths):
     print("\n=== Start inserting entities ===\n")
     entities = [
         np.random.random(num_entities).tolist(),
         all_embeddings,
         all_code_snippets,
-        all_file_hashes
+        all_file_hashes,
+        all_file_paths
     ]
 
     if (num_entities > 0):
