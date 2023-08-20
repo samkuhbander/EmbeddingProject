@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 import glob
+import hashlib
 from parsers import parse_file
 from embedding import embed_sentences
 from milvus_DB import connect_to_milvus, create_collection, create_index, does_db_exist, insert_entities
@@ -8,7 +9,15 @@ def process_file(file_path):
     print(f"Parsing file: {file_path}")
     methods_or_chunks = parse_file(file_path)
     embeddings = embed_sentences(methods_or_chunks)
-    return embeddings, methods_or_chunks
+    file_hash = hash_file(file_path)
+    return embeddings, methods_or_chunks, file_hash
+
+def hash_file(file_path):
+    with open(file_path, 'rb') as f:
+        file_hash = hashlib.sha256()
+        while chunk := f.read(8192):
+            file_hash.update(chunk)
+    return int(file_hash.hexdigest(), 16) % 10**16
 
 dim = 768
 
@@ -28,17 +37,19 @@ else:
 # Collecting embeddings for all the chunks
 all_embeddings = []
 all_code_snippets = []
+all_file_hashes = []
 
 with ThreadPoolExecutor() as executor:
     results = list(executor.map(process_file, files))
 
-for embeddings, methods_or_chunks in results:
+for embeddings, methods_or_chunks, file_hash in results:
     all_embeddings.extend(embeddings)
     all_code_snippets.extend(methods_or_chunks)
+    all_file_hashes.extend([file_hash] * len(methods_or_chunks))
 
 num_entities = len(all_embeddings)
 
-insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets)
+insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets, all_file_hashes)
 create_index(milvus_DB)
 print("Done adding entities to Milvus_DB")
 
