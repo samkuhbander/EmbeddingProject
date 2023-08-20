@@ -37,20 +37,6 @@ def drop_unrepresented_files(current_file_hashes):
     collection.delete(expr_delete)
     collection.flush()  # Optionally flush the changes
 
-
-def drop_altered_file(hashedFile):
-    collection = Collection("milvus_DB")
-    collection.load()  # Get an existing collection.
-    ids = collection.query(
-        expr="hash_file == " + hashedFile + "",
-        offset=0,
-        output_fields=["pk"],
-    )
-
-    print("\n=== dropped an altered file. PKs = " + ids + "===\n")
-    collection.delete_entity_by_id(collection_name="milvus_DB", id_array=ids)
-
-
 # this if for testing and reseting purposes
 def drop_collection(collection_name):
     utility.drop_collection(collection_name)
