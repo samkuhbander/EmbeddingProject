@@ -53,7 +53,6 @@ def create_collection(dim):
         FieldSchema(
             name="pk", dtype=DataType.INT64, is_primary=True, auto_id=True
         ),  # set auto_id to True
-        FieldSchema(name="random", dtype=DataType.DOUBLE),
         FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=dim),
         FieldSchema(name="code_snippet", dtype=DataType.VARCHAR, max_length=10000),
         FieldSchema(name="file_hash", dtype=DataType.INT64),  # Field for file hash
@@ -67,7 +66,6 @@ def create_collection(dim):
 
 def insert_entities(
     milvus_DB,
-    num_entities,
     all_embeddings,
     all_code_snippets,
     all_file_hashes,
@@ -75,19 +73,16 @@ def insert_entities(
 ):
     print("\n=== Start inserting entities ===\n")
     entities = [
-        np.random.random(num_entities).tolist(),
         all_embeddings,
         all_code_snippets,
         all_file_hashes,
         all_file_paths,
     ]
 
-    if num_entities > 0:
+    #Check if anything to insert
+    if len(all_embeddings) > 0:
         insert_result = milvus_DB.insert(entities)
-    else:
-        print("No new files to add to Milvus_DB")
     milvus_DB.flush()
-    print(f"Number of entities in Milvus_DB: {milvus_DB.num_entities}")
 
 
 def create_index(collection, field_name="embeddings", metric_type="L2"):
