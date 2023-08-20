@@ -61,11 +61,10 @@ for embeddings, methods_or_chunks, file_hash, file_path in results:
     all_embeddings.extend(embeddings)
     all_code_snippets.extend(methods_or_chunks)
     all_file_hashes.extend([file_hash] * len(methods_or_chunks))
-    all_file_paths.extend(file_path)
-    print(file_path)
+    all_file_paths.extend([file_path] * len(methods_or_chunks))
 
 num_entities = len(all_embeddings)
-print(str(all_file_paths))
+print(all_file_paths)
 insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets, all_file_hashes, all_file_paths)
 create_index(milvus_DB)
 
