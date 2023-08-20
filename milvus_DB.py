@@ -9,12 +9,16 @@ from pymilvus import (
 def connect_to_milvus():
     print("\n=== start connecting to Milvus ===\n")
     connections.connect("default", host="localhost", port="19530")
-    
+
+def does_db_exist():
+    print("\n=== check if Milvus_DB exists ===\n")
+    return utility.has_collection("milvus_DB")
+
 def create_collection(dim):
     # If collection already exists, drop it
-    if utility.has_collection("milvus_DB"):
-        print("\n=== Collection 'milvus_DB' already exists. Dropping it ===\n")
-        utility.drop_collection("milvus_DB")
+    # if utility.has_collection("milvus_DB"):
+    #     print("\n=== Collection 'milvus_DB' already exists. Dropping it ===\n")
+    #     utility.drop_collection("milvus_DB")
 
     print("\n=== Create collection 'milvus_DB' ===\n")
     fields = [
