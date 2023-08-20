@@ -3,7 +3,7 @@ import glob
 import hashlib
 from parsers import parse_file
 from embedding import embed_sentences
-from milvus_DB import connect_to_milvus, create_collection, create_index, does_collection_exist, insert_entities, drop_collection, drop_altered_file
+from milvus_DB import connect_to_milvus, create_collection, create_index, does_collection_exist, insert_entities, drop_collection
 from compare_file_hashes import compareFiles
 from search import search_similar_entities
 from pymilvus import (

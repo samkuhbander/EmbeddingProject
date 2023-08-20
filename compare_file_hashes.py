@@ -1,6 +1,6 @@
 import glob
 import hashlib
-from milvus_DB import drop_altered_file, drop_unrepresented_files
+from milvus_DB import drop_unrepresented_files
 from pymilvus import (
     Collection
 )

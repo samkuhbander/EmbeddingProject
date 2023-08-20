@@ -34,7 +34,7 @@ def drop_unrepresented_files(current_file_hashes):
     
     # Delete the entities by the primary key values
     expr_delete = f"pk in {ids}"
-    collection.delete(expr_delete)
+    print(collection.delete(expr_delete))
     collection.flush()  # Optionally flush the changes
 
 # this if for testing and reseting purposes
