@@ -1,10 +1,9 @@
-import time
 import numpy as np
 from pymilvus import (
     connections,
     utility,
     FieldSchema, CollectionSchema, DataType,
-    Collection, IndexType
+    Collection
 )
 
 def connect_to_milvus():
@@ -14,23 +13,30 @@ def connect_to_milvus():
     print(f"Does collection hello_milvus exist in Milvus: {has}")
 
 def create_collection(dim):
+    #If collection already exists, drop it
+    if utility.has_collection("milvus_DB"):
+        print("\n=== Collection 'milvus_DB' already exists. Dropping it ===\n")
+        utility.drop_collection("milvus_DB")
+
     print("\n=== Create collection 'milvus_DB' ===\n")
     fields = [
         FieldSchema(name="pk", dtype=DataType.VARCHAR, is_primary=True, auto_id=False, max_length=100),
         FieldSchema(name="random", dtype=DataType.DOUBLE),
-        FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=dim)
+        FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=dim),
+        FieldSchema(name="code_snippet", dtype=DataType.VARCHAR, max_length=10000)
     ]
 
     schema = CollectionSchema(fields, "introducing melvis 'milvus_DB'")
     milvus_DB = Collection("milvus_DB", schema, consistency_level="Strong")
     return milvus_DB
 
-def insert_entities(milvus_DB, num_entities, all_embeddings):
+def insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets):
     print("\n=== Start inserting entities ===\n")
     entities = [
         [str(i) for i in range(num_entities)],
         np.random.random(num_entities).tolist(),
-        all_embeddings
+        all_embeddings,
+        all_code_snippets
     ]
 
     insert_result = milvus_DB.insert(entities)
