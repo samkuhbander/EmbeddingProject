@@ -11,7 +11,7 @@ def connect_to_milvus():
     print("\n=== start connecting to Milvus ===\n")
     connections.connect("default", host="localhost", port="19530")
 
-def does_db_exist():
+def does_collection_exist():
     print("\n=== check if Milvus_DB exists ===\n")
     return utility.has_collection("milvus_DB")
 
@@ -19,7 +19,7 @@ def drop_altered_file(hashedFile):
     collection = Collection("milvus_DB")  
     collection.load()    # Get an existing collection.
     ids = collection.query(
-        expr = "file_hash in " + hashedFile + "",
+        expr = "hash_file == " + hashedFile + "",
         offset = 0,
         output_fields = ["pk"],
         )
@@ -29,9 +29,9 @@ def drop_altered_file(hashedFile):
 
 def create_collection(dim):
     # if database exists, drop it
-    if does_db_exist():
-        print("\n=== Drop collection 'milvus_DB' ===\n")
-        utility.drop_collection("milvus_DB")
+    # if does_db_exist():
+    #     print("\n=== Drop collection 'milvus_DB' ===\n")
+    #     utility.drop_collection("milvus_DB")
 
     print("\n=== Create collection 'milvus_DB' ===\n")
     fields = [
@@ -55,7 +55,8 @@ def insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets, 
         all_file_hashes
     ]
 
-    insert_result = milvus_DB.insert(entities)
+    if (num_entities > 0):
+        insert_result = milvus_DB.insert(entities)
     milvus_DB.flush()
     print(f"Number of entities in Milvus_DB: {milvus_DB.num_entities}")
 

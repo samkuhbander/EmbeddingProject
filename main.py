@@ -3,7 +3,8 @@ import glob
 import hashlib
 from parsers import parse_file
 from embedding import embed_sentences
-from milvus_DB import connect_to_milvus, create_collection, create_index, does_db_exist, insert_entities
+from milvus_DB import connect_to_milvus, create_collection, create_index, does_collection_exist, insert_entities
+from compare_code_chunks import compareFiles
 
 def process_file(file_path):
     print(f"Parsing file: {file_path}")
@@ -23,12 +24,17 @@ dim = 768
 
 directory_path = ''
 files = None
-
+milvus_DB = None
 connect_to_milvus()
-if does_db_exist() & False:  # temporarily make this code unreachable
+if does_collection_exist():  # temporarily make this code unreachable
     # only add the new embeddings and code snippets
-    files = 'new files' # TODO: this is where we extract the new files
+    print("Milvus_DB already exists")
+    files = compareFiles(); # TODO: this is where we extract the new files
+    if len(files) == 0:
+        print("No new files to add to Milvus_DB")
+    milvus_DB = create_collection(dim)
 else:
+    print("Milvus_DB does not exist")
     milvus_DB = create_collection(dim)
     directory_path = 'ExampleProject/*'
     files = glob.glob(directory_path)
@@ -51,6 +57,7 @@ num_entities = len(all_embeddings)
 
 insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets, all_file_hashes)
 create_index(milvus_DB)
+
 print("Done adding entities to Milvus_DB")
 
 # Load collection
