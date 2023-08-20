@@ -15,17 +15,17 @@ def does_collection_exist():
     print("\n=== check if Milvus_DB exists ===\n")
     return utility.has_collection("milvus_DB")
 
-def drop_altered_file(hashedFile):
+def drop_altered_file(file_path):
     collection = Collection("milvus_DB")  
     collection.load()    # Get an existing collection.
     ids = collection.query(
-        expr = "hash_file == " + hashedFile + "",
+        expr = "file_path == " + file_path + "",
         offset = 0,
         output_fields = ["pk"],
         )
-    
-    print("\n=== dropped an altered file. PKs = " + ids + "===\n")
     collection.delete_entity_by_id(collection_name='milvus_DB', id_array=ids)
+    print("\n=== dropped an altered file. PKs = " + ids + "===\n")
+    
 
 # this if for testing and reseting purposes
 def drop_collection(collection_name):

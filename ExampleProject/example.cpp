@@ -3,16 +3,9 @@
 
 class Example {
 public:
-    void greet(const std::string &name) {
-        std::cout << "Hello, " << name << "!" << std::endl;
-    }
 
     int add(int a, int b) {
         return a + b;
-    }
-
-    bool isEven(int number) {
-        return number % 2 == 0;
     }
 
     bool isPrime(int number) {
