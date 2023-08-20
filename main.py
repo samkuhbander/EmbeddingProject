@@ -16,7 +16,7 @@ directory_path = ''
 files = None
 
 connect_to_milvus()
-if does_db_exist():
+if does_db_exist() & False:  # temporarily make this code unreachable
     # only add the new embeddings and code snippets
     files = 'new files' # TODO: this is where we extract the new files
 else:
