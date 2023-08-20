@@ -1,20 +1,26 @@
+from concurrent.futures import ThreadPoolExecutor
 import glob
-from parsers import parse_methods
+from parsers import parse_file
 from embedding import embed_sentences
 from milvus_DB import connect_to_milvus, create_collection, create_index, insert_entities
 
-directory_path = 'ExampleProject/*'
+def process_file(file_path):
+    print(f"Parsing file: {file_path}")
+    methods_or_chunks = parse_file(file_path)
+    embeddings = embed_sentences(methods_or_chunks)
+    return embeddings, methods_or_chunks
 
+directory_path = 'ExampleProject/*'
 files = glob.glob(directory_path)
 
 # Collecting embeddings for all the chunks
 all_embeddings = []
 all_code_snippets = []
 
-for file_path in files:
-    print(f"Parsing file: {file_path}")
-    methods_or_chunks = parse_methods(file_path)
-    embeddings = embed_sentences(methods_or_chunks)
+with ThreadPoolExecutor() as executor:
+    results = list(executor.map(process_file, files))
+
+for embeddings, methods_or_chunks in results:
     all_embeddings.extend(embeddings)
     all_code_snippets.extend(methods_or_chunks)
 
