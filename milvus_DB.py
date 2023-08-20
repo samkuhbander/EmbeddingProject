@@ -9,31 +9,28 @@ from pymilvus import (
 def connect_to_milvus():
     print("\n=== start connecting to Milvus ===\n")
     connections.connect("default", host="localhost", port="19530")
-    has = utility.has_collection("hello_milvus")
-    print(f"Does collection hello_milvus exist in Milvus: {has}")
 
 def create_collection(dim):
-    #If collection already exists, drop it
+    # If collection already exists, drop it
     if utility.has_collection("milvus_DB"):
         print("\n=== Collection 'milvus_DB' already exists. Dropping it ===\n")
         utility.drop_collection("milvus_DB")
 
     print("\n=== Create collection 'milvus_DB' ===\n")
     fields = [
-        FieldSchema(name="pk", dtype=DataType.VARCHAR, is_primary=True, auto_id=False, max_length=100),
+        FieldSchema(name="pk", dtype=DataType.INT64, is_primary=True, auto_id=True),
         FieldSchema(name="random", dtype=DataType.DOUBLE),
         FieldSchema(name="embeddings", dtype=DataType.FLOAT_VECTOR, dim=dim),
         FieldSchema(name="code_snippet", dtype=DataType.VARCHAR, max_length=10000)
     ]
 
-    schema = CollectionSchema(fields, "introducing melvis 'milvus_DB'")
+    schema = CollectionSchema(fields, description="introducing melvis 'milvus_DB'")
     milvus_DB = Collection("milvus_DB", schema, consistency_level="Strong")
     return milvus_DB
 
 def insert_entities(milvus_DB, num_entities, all_embeddings, all_code_snippets):
     print("\n=== Start inserting entities ===\n")
     entities = [
-        [str(i) for i in range(num_entities)],
         np.random.random(num_entities).tolist(),
         all_embeddings,
         all_code_snippets
